@@ -34,19 +34,21 @@ class CommentCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        
-
         yield AssociationField::new('conference');
+
         yield TextField::new('author');
+
         yield EmailField::new('email');
+
         yield TextareaField::new('text')
             ->hideOnIndex();
+
         yield TextField::new('photoFileName')
             ->onlyOnIndex();
 
         $createdAt = DateTimeField::new('createdAt')->setFormTypeOptions([
             'html5' => true,
-            'years' => range(date('Y'), date('Y'), 5),
+            'years' => range(date('Y'), date('Y') - 5),
             'widget' => 'single_text'
         ]);
 
@@ -61,7 +63,6 @@ class CommentCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
      {
      return $filters
-        ->add(EntityFilter::new('conference'))
-     ;
+        ->add(EntityFilter::new('conference')) ;
      }
 }
