@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\ConferenceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Stringable;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ConferenceRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
-class Conference
+class Conference implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,11 +26,16 @@ class Conference
     private ?bool $international = null;
 
     #[ORM\OneToMany(mappedBy: 'conference', targetEntity: Comment::class)]
-    private Collection $comment;
+    private Collection $comments;
 
     public function __construct()
     {
-        $this->comment = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->getCity();
     }
 
     public function getId(): ?int
@@ -76,15 +82,15 @@ class Conference
     /**
      * @return Collection<int, Comment>
      */
-    public function getComment(): Collection
+    public function getComments(): Collection
     {
-        return $this->comment;
+        return $this->comments;
     }
 
-    public function addComment(Comment $comment): self
+    public function addComments(Comment $comment): self
     {
-        if (!$this->comment->contains($comment)) {
-            $this->comment->add($comment);
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
             $comment->setConference($this);
         }
 
@@ -93,7 +99,7 @@ class Conference
 
     public function removeComment(Comment $comment): self
     {
-        if ($this->comment->removeElement($comment)) {
+        if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
             if ($comment->getConference() === $this) {
                 $comment->setConference(null);
@@ -102,4 +108,6 @@ class Conference
 
         return $this;
     }
+
+  
 }

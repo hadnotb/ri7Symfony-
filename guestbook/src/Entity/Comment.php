@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentRepository;
+use Stringable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CommentRepository;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-class Comment
+class Comment implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,11 +27,16 @@ class Comment
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comment')]
+    #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?Conference $conference = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoFileName = null;
+
+    public function __toString(): string
+    {
+        return (string) $this->getEmail();
+    }
 
     public function getId(): ?int
     {
