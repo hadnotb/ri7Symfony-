@@ -49,7 +49,7 @@ class ConferenceController extends AbstractController
                 try {
                     $photo->move($photoDir, $filename);
                 } catch (FileException $e) {
-                    // unable to upload the photo, give up
+                    echo'PAS BIENNN';
                 }
                 $comment->setPhotoFilename($filename);
             }
