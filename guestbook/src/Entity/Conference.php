@@ -7,8 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
+#[UniqueEntity('slug')]
 class Conference implements Stringable
 {
     #[ORM\Id]
@@ -28,7 +31,7 @@ class Conference implements Stringable
     #[ORM\OneToMany(mappedBy: 'conference', targetEntity: Comment::class)]
     private Collection $comments;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
     private ?string $slug = null;
 
     public function __construct()
@@ -38,13 +41,14 @@ class Conference implements Stringable
 
     public function __toString(): string
     {
-        return (string) $this->getCity();
+        return (string) $this->getCity().' '. $this->getYear();
     }
 
     public function getId(): ?int
     {
         return $this->id;
     }
+
 
     public function getCity(): ?string
     {
@@ -110,6 +114,13 @@ class Conference implements Stringable
         }
 
         return $this;
+    }
+
+    public function computeSlug(SluggerInterface $slugger)
+    {
+        if (!$this->slug || '-' === $this->slug) {
+            $this->slug = (string) $slugger->slug((string) $this)->lower();
+        }
     }
 
     public function getSlug(): ?string
